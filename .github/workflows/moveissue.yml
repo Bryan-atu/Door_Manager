@@ -1,0 +1,27 @@
+name: Move Issue on Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  move-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Check if Comment Contains 'on it'
+      if: contains(github.event.comment.body, 'on it')
+      run: |
+        echo "Moving issue to 'In Progress' column..."
+
+    - name: Move Issue to 'In Progress'
+      if: contains(github.event.comment.body, 'on it')
+      uses: peter-evans/create-or-update-project-card@v2
+      with:
+        project-id: YOUR_PROJECT_ID
+        column-name: 'In Progress'
+        issue-number: ${{ github.event.issue.number }}
+        token: ${{ secrets.GITHUB_TOKEN }}
