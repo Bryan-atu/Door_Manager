@@ -21,7 +21,8 @@ jobs:
       if: contains(github.event.comment.body, 'on it')
       uses: peter-evans/create-or-update-project-card@v2
       with:
-        project-id: YOUR_PROJECT_ID
+        project-location: Bryan-atu/Door_Manager
+        project-number: 1 
         column-name: 'In Progress'
         issue-number: ${{ github.event.issue.number }}
         token: ${{ secrets.GITHUB_TOKEN }}
