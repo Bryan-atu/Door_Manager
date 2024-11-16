@@ -20,7 +20,7 @@ jobs:
               console.log(`Moving issue #${issueNumber} to "In Progress" column based on comment: ${comment}`);
               
               // You can specify the project and column names here
-              const projectName = 'door_manager project';  // Name of the project
+              const projectName = 'Door_Manager';  // Name of the project
               const columnName = 'In Progress';  // Column name where you want to move the issue
 
               // Get all projects for the repository
