@@ -12,7 +12,6 @@ jobs:
         uses: actions/github-script@v6
         with:
           token: ${{ secrets.PAT_TOKEN }}
-        with:
           script: |
             const comment = context.payload.comment.body.toLowerCase();
             const projectId = "PVT_kwHOCvwGBc4AqQdO"; 
