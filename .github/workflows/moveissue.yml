@@ -16,7 +16,7 @@ jobs:
       - name: Move issue to 'In Progress' if comment contains 'on it'
         uses: actions/github-script@v6
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.PAT_TOKEN }}
           script: |
             const comment = context.payload.comment.body.toLowerCase();
             const projectId = "PVT_kwHOCvwGBc4AqQdO"; 
