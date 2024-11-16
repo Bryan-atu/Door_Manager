@@ -14,47 +14,31 @@ jobs:
           script: |
             const comment = context.payload.comment.body.toLowerCase();
             const issueNumber = context.payload.issue.number;
+            const columnName = "In Progress";  // Name of the column
+            const projectId = 1;  
 
             // Check if the comment includes the phrase "on it"
             if (comment.includes('on it')) {
               console.log(`Moving issue #${issueNumber} to "In Progress" column based on comment: ${comment}`);
-              
-              // You can specify the project and column names here
-              const projectName = 'Door_Manager';  // Name of the project
-              const columnName = 'In Progress';  // Column name where you want to move the issue
 
-              // Get all projects for the repository
-              const projects = await github.rest.projects.listForRepo({
-                owner: context.repo.owner,
-                repo: context.repo.repo
-              });
-
-              // Find the project by name
-              const project = projects.data.find(p => p.name === projectName);
-
-              if (project) {
-                // Get columns for the project
-                const columns = await github.rest.projects.listColumns({
-                  project_id: project.id
-                });
-
-                // Find the column by name
-                const column = columns.data.find(c => c.name === columnName);
-
-                if (column) {
-                  // Create a new project card (move the issue to the "In Progress" column)
-                  await github.rest.projects.createCard({
-                    column_id: column.id,
-                    content_id: issueNumber,
-                    content_type: 'Issue'
-                  });
-                  console.log(`Moved issue #${issueNumber} to the "${columnName}" column.`);
-                } else {
-                  console.log(`Column "${columnName}" not found in project "${projectName}".`);
+              // Define GraphQL mutation to move the issue
+              const mutation = `
+                mutation {
+                  addProjectV2ItemById(input: {
+                    projectId: "${projectId}",
+                    contentId: "${issueNumber}"
+                  }) {
+                    item {
+                      id
+                    }
+                  }
                 }
-              } else {
-                console.log(`Project "${projectName}" not found.`);
-              }
+              `;
+
+              // Send GraphQL request to GitHub
+              const response = await github.graphql(mutation);
+              console.log(`Moved issue #${issueNumber} to the "In Progress" column.`);
             } else {
               console.log(`Comment does not contain 'on it'; action skipped.`);
             }
+
