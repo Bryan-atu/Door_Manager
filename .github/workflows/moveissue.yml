@@ -13,32 +13,59 @@ jobs:
         with:
           script: |
             const comment = context.payload.comment.body.toLowerCase();
-            const issueNumber = context.payload.issue.number;
-            const columnName = "In Progress";  // Name of the column
-            const projectId = PVT_kwHOCvwGBc4AqQdO;  
+            const projectId = "PVT_kwHOCvwGBc4AqQdO"; 
 
-            // Check if the comment includes the phrase "on it"
+            // Check if the comment contains 'on it'
             if (comment.includes('on it')) {
-              console.log(`Moving issue #${issueNumber} to "In Progress" column based on comment: ${comment}`);
-
-              // Define GraphQL mutation to move the issue
-              const mutation = `
-                mutation {
-                  addProjectV2ItemById(input: {
-                    projectId: "${projectId}",
-                    contentId: "${issueNumber}"
-                  }) {
-                    item {
-                      id
+              console.log(`Checking open issues for project ${projectId} based on comment: ${comment}`);
+              
+              // Query for open issues in the project
+              const query = `
+                query {
+                  node(id: "${projectId}") {
+                    ... on ProjectV2 {
+                      items(first: 100) {
+                        nodes {
+                          id
+                          content {
+                            ... on Issue {
+                              id
+                              number
+                              title
+                              state
+                            }
+                          }
+                        }
+                      }
                     }
                   }
                 }
               `;
 
-              // Send GraphQL request to GitHub
-              const response = await github.graphql(mutation);
-              console.log(`Moved issue #${issueNumber} to the "In Progress" column.`);
+              const response = await github.graphql(query);
+              const openIssues = response.node.items.nodes.filter(issue => issue.content.state === 'OPEN');
+              
+              // Move each open issue to "In Progress"
+              for (const issue of openIssues) {
+                const issueId = issue.content.id;
+                console.log(`Moving issue #${issue.content.number} to "In Progress"`);
+                
+                // Add the issue to the "In Progress" column
+                await github.graphql(`
+                  mutation {
+                    addProjectV2ItemById(input: {
+                      projectId: "${projectId}",
+                      contentId: "${issueId}"
+                    }) {
+                      item {
+                        id
+                      }
+                    }
+                  }
+                `);
+
+                console.log(`Moved issue #${issue.content.number} to "In Progress"`);
+              }
             } else {
               console.log(`Comment does not contain 'on it'; action skipped.`);
             }
-
