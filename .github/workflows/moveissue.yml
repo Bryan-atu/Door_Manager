@@ -15,7 +15,9 @@ jobs:
           script: |
             const comment = context.payload.comment.body.toLowerCase();
             const projectId = "PVT_kwHOCvwGBc4AqQdO"; 
-
+            const fieldId = "PVTSSF_lAHOCvwGBc4AqQdOzghiJMQ"; // Status field ID
+            const inProgressOptionId = "f75ad846"; // Option ID for "In Progress"
+            
             // Check if the comment contains 'on it'
             if (comment.includes('on it')) {
               console.log(`Checking open issues for project ${projectId} based on comment: ${comment}`);
@@ -51,14 +53,16 @@ jobs:
                 const issueId = issue.content.id;
                 console.log(`Moving issue #${issue.content.number} to "In Progress"`);
                 
-                // Add the issue to the "In Progress" column
+                // Update the status field to "In Progress"
                 await github.graphql(`
                   mutation {
-                    addProjectV2ItemById(input: {
+                    updateProjectV2ItemFieldValue(input: {
                       projectId: "${projectId}",
-                      contentId: "${issueId}"
+                      itemId: "${issueId}",
+                      fieldId: "${fieldId}",
+                      value: { singleSelectOptionId: "${inProgressOptionId}" }
                     }) {
-                      item {
+                      projectV2Item {
                         id
                       }
                     }
