@@ -25,4 +25,4 @@ jobs:
         project-number: 1 
         column-name: 'In Progress'
         issue-number: ${{ github.event.issue.number }}
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT_TOKEN }}
