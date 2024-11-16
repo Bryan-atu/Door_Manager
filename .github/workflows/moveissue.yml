@@ -15,11 +15,11 @@ jobs:
       with:
         project: 'door_manager project' 
         column: 'In Progress'       
-        repo-token: ${{ secrets.PAT_TOKEN }}
+        repo-token: ${{ secrets.curl }}
 
     - name: Debug GitHub API Response
       run: |
-        curl -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
+        curl -H "Authorization: Bearer ${{ secrets.curl }}" \
              -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/${{ github.repository }}/projects
 
