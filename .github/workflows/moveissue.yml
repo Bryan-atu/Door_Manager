@@ -1,25 +1,60 @@
-name: Move Assigned Issues to Project Column
+name: Move Issue to "In Progress" on Comment
 
 on:
-  issues:
-    types:
-      - assigned 
+  issue_comment:
+    types: [created]
 
 jobs:
-  move-issue:
+  move_issue_to_in_progress:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Debug GitHub API Response
-      run: |
-        curl -H "Authorization: Bearer ${{ secrets.PAT_TOKEN }}" \
-             -H "Accept: application/vnd.github.v3+json" \
-              https://api.github.com/repos/${{ github.repository }}/projects
+      - name: Move issue to 'In Progress' if comment contains 'on it'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const comment = context.payload.comment.body.toLowerCase();
+            const issueNumber = context.payload.issue.number;
 
+            // Check if the comment includes the phrase "on it"
+            if (comment.includes('on it')) {
+              console.log(`Moving issue #${issueNumber} to "In Progress" column based on comment: ${comment}`);
+              
+              // You can specify the project and column names here
+              const projectName = 'door_manager project';  // Name of the project
+              const columnName = 'In Progress';  // Column name where you want to move the issue
 
-    - name: Move Issue to 'In Progress' Column
-      uses: alex-page/github-project-automation-plus@v0.3.0
-      with:
-        project: 'door_manager project' 
-        column: 'In Progress'       
-        repo-token: ${{ secrets.PAT_TOKEN }}
+              // Get all projects for the repository
+              const projects = await github.rest.projects.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo
+              });
+
+              // Find the project by name
+              const project = projects.data.find(p => p.name === projectName);
+
+              if (project) {
+                // Get columns for the project
+                const columns = await github.rest.projects.listColumns({
+                  project_id: project.id
+                });
+
+                // Find the column by name
+                const column = columns.data.find(c => c.name === columnName);
+
+                if (column) {
+                  // Create a new project card (move the issue to the "In Progress" column)
+                  await github.rest.projects.createCard({
+                    column_id: column.id,
+                    content_id: issueNumber,
+                    content_type: 'Issue'
+                  });
+                  console.log(`Moved issue #${issueNumber} to the "${columnName}" column.`);
+                } else {
+                  console.log(`Column "${columnName}" not found in project "${projectName}".`);
+                }
+              } else {
+                console.log(`Project "${projectName}" not found.`);
+              }
+            } else {
+              console.log(`Comment does not contain 'on it'; action skipped.`);
+            }
