@@ -15,5 +15,5 @@ jobs:
       with:
         project: 'Bryan-atu' 
         column: 'In Progress'       
-        token: ${{ secrets.GITHUB_TOKEN }}
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
 
