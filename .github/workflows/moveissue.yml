@@ -1,28 +1,19 @@
-name: Move Issue on Comment
+name: Move Assigned Issues to Project Column
 
 on:
-  issue_comment:
-    types: [created]
+  issues:
+    types:
+      - assigned 
 
 jobs:
   move-issue:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
-
-    - name: Check if Comment Contains 'on it'
-      if: contains(github.event.comment.body, 'on it')
-      run: |
-        echo "Moving issue to 'In Progress' column..."
-
-    - name: Move Issue to 'In Progress'
-      if: contains(github.event.comment.body, 'on it')
-      uses: peter-evans/create-or-update-project-card@v2
+    - name: Move Issue to 'In Progress' Column
+      uses: alex-page/github-project-automation-plus@v0.3.0
       with:
-        project-location: Bryan-atu
-        project-number: 1 
-        column-name: 'In Progress'
-        issue-number: ${{ github.event.issue.number }}
-        token: ${{ secrets.PAT_TOKEN }}
+        project: 'Bryan-atu' 
+        column: 'In Progress'       
+        token: ${{ secrets.GITHUB_TOKEN }}
+
