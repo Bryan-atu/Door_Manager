@@ -7,11 +7,6 @@ on:
 jobs:
   move_issue_to_in_progress:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
-      actions: write
     steps:
       - name: Move issue to 'In Progress' if comment contains 'on it'
         uses: actions/github-script@v6
