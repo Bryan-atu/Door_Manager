@@ -26,4 +26,4 @@ jobs:
         pip install pytest
 
     - name: Run tests
-      run: pytest unit_tests/test_car.py
+      run: pytest unit_tests/
