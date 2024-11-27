@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feat/actions19
   pull_request:
 
 jobs:
