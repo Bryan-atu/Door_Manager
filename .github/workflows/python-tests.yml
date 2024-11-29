@@ -29,4 +29,4 @@ jobs:
       run: pytest -v -s unit_tests/
 
     - name: Run single test
-      run: pytest -v -s unit_tests/test_file.py::test_custom_num_doors
+      run: pytest -v -s unit_tests/test_car.py::test_custom_num_doors
