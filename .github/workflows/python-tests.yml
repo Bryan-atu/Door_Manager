@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feat/actions20
   pull_request:
 
 jobs:
@@ -26,3 +27,6 @@ jobs:
 
     - name: Run tests
       run: pytest -v -s unit_tests/
+
+    - name: Run single test
+      run: pytest -v -s unit_tests/test_file.py::test_custom_num_doors
